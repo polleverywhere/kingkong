@@ -33,24 +33,26 @@ KingKong makes it easy to build full-stack ping-pong checks. You might need this
 When its done, it will look something like this:
 
     KingKing.monitor {
-      ping.every(3).seconds :google do |ping|
+      socket '/tmp/kingkong.socket' # Munin can check this for stats
+
+      ping(:google).every(3).seconds do |ping|
         google = http('http://www.google.com/').get
 
-        ping.errback {
-          # Email the admin! Google is down!
+        ping.on_timeout {
+          # ZOMG! Email the admin! Google is down!
         }
 
         ping.start_time           # Start the clock!
-        google.callback {        # This triggers the request
+        google.callback {         # This triggers the request
           ping.end_time           # And this stops the clock!
         }
       end
 
-      ping.every(10).seconds :twitter do |ping|
+      ping(:twitter).every(10).seconds do |ping|
         # Wire up your own thing in here that tweets
         # .. and when you pick that up, end the pong!
       end
-    }.start
+    }
 
 and its going to aggregate stats so you can plug it into munin and get all sorts of graphing goodness.
 
