@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require 'socket'
+require 'yaml'
+
+puts case ARGV.first
+when /config/
+  %(graph_title Result latency
+graph_category App
+graph_vlabel load
+load.label load)  
+else
+  stats = YAML.load UNIXSocket.new("/tmp/kingkong.socket").gets("\r\n")
+  %(load.value #{stats[:avg]})
+end
