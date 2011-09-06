@@ -7,9 +7,4 @@ module KingKong
       KingKong.logger
     end
   end
-
-  # Default logger for KingKong.
-  def self.logger
-    @logger ||= Logger.new($stdout)
-  end
 end

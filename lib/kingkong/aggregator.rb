@@ -4,7 +4,7 @@ module KingKong
   class Aggregator
     attr_reader :sum, :max_count, :pings, :started_at
 
-    def initialize(max_count=10)
+    def initialize(max_count=10_000)
       @max_count = max_count
       reset
     end
@@ -48,7 +48,7 @@ module KingKong
 
     # Reset all of the counts to 0 and empty all of the pings
     def reset
-      @sum        = 0
+      @sum        = 0.0
       @pings      = Array.new
       @started_at = Time.now
     end

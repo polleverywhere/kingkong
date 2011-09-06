@@ -5,3 +5,11 @@ gemspec
 
 gem 'em-http-request'
 gem 'json'
+
+group :test, :development do
+  gem 'rspec'
+  gem 'guard-rspec'
+  gem 'growl'
+  gem 'rb-fsevent'
+  gem 'em-ventually'
+end
