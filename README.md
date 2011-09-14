@@ -56,7 +56,9 @@ When its done, it will look something like this:
       end
     }
 
-and its going to aggregate stats so you can plug it into munin and get all sorts of graphing goodness.
+and its going to aggregate stats so you can plug it into munin and get all sorts of graphing goodness. You can see the stats by looking into the socket:
+
+    watch cat /tmp/king_kong.socket
 
 ## Getting Started
 
@@ -67,3 +69,7 @@ Install the KingKong gem.
 Then look at the example above!
 
 If you don't understand EventMachine, you might have a little trouble getting this stuff working. Eventually I'd like to hook up Em::Syncrony and a nicer DSL for common tasks, like HTTP checks, to keep things simple.
+
+## Using KingKong with Munin graphs
+
+I'm working on this!
