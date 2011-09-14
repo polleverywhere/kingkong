@@ -34,20 +34,25 @@ When its done, it will look something like this:
     
     require 'kingkong'
     require 'em-http-request'
-    
-    KingKing::Runner.start {
+
+    KingKong::Runner.start {
       socket '/tmp/king_kong.socket' # Check this socket with Munin and make a graph!
-      
+
       ping(:google).every(3).seconds do |ping|
-        google = EventMachine::HttpRequest.new('http://google.com/')
+        ping.start
+        google = EventMachine::HttpRequest.new('http://google.com/').get
         google.callback { ping.stop }
-        google.errback { ping.fail }
-        ping.start and google.get
+        google.errback  { ping.fail }
       end
-      
+
       ping(:twitter).every(10).seconds do |ping|
         # Wire up your own thing in here that tweets
         # .. and when you pick that up, end the pong!
+      end
+
+      ping(:verizon).every(2).seconds do |ping|
+        # Hook your machine up to a GSM serial modem
+        # and perform regular SMS pings against your app.
       end
     }
 
