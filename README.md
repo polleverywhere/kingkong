@@ -30,8 +30,15 @@
 
 KingKong makes it easy to build full-stack ping-pong health checks so you can keep an eye on crucial input/outputs and make sure things stay nice and fast. You might need this to check and graph out the response time on your website, Twitter application, SMS gateway, or whatever else you'd connect to a network.
 
-When its done, it will look something like this:
-    
+
+## Getting Started
+
+Install the KingKong gem.
+
+    gem install kingkong
+
+Then implement your ping checks in Ruby.
+
     require 'kingkong'
     require 'em-http-request'
 
@@ -56,17 +63,11 @@ When its done, it will look something like this:
       end
     }
 
-and its going to aggregate stats so you can plug it into munin and get all sorts of graphing goodness. You can see the stats by looking into the socket:
+Save the file and run it! You'll see some crazy log output right now, but eventually its going to be prettier.
+
+You can see the stat aggregates of the pings by looking into the socket:
 
     watch cat /tmp/king_kong.socket
-
-## Getting Started
-
-Install the KingKong gem.
-
-    gem install kingkong
-
-Then look at the example above!
 
 If you don't understand EventMachine, you might have a little trouble getting this stuff working. Eventually I'd like to hook up Em::Syncrony and a nicer DSL for common tasks, like HTTP checks, to keep things simple.
 
