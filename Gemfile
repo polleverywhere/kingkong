@@ -12,4 +12,6 @@ group :test, :development do
   gem 'growl'
   gem 'rb-fsevent'
   gem 'em-ventually'
+  gem 'timecop'
+  gem 'ruby-debug19'
 end

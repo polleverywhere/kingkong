@@ -8,8 +8,8 @@
          | /.----/ O O \----.\ |       
           \/     |     |     \/        
           |                   |            
-          |                   |           KingKong gets what KingKong wants!
-          |                   |          
+          |                   |       Full stack health checks for your networked apps!
+          |                   |         (Kinda like Pingdom, but way deeper and free)
           _\   -.,_____,.-   /_         
       ,.-"  "-.,_________,.-"  "-.,
      /          |       |          \  
@@ -28,26 +28,23 @@
       |             |             |         |
        \__|__|__|__/ \__|__|__|__/ \_|__|__/
 
-KingKong makes it easy to build full-stack ping-pong checks. You might need this to check and graph out the response time on your website, Twitter application, SMS gateway, or whatever else you'd connect to a network.
+KingKong makes it easy to build full-stack ping-pong health checks so you can keep an eye on crucial input/outputs and make sure things stay nice and fast. You might need this to check and graph out the response time on your website, Twitter application, SMS gateway, or whatever else you'd connect to a network.
 
 When its done, it will look something like this:
-
-    KingKing.monitor {
-      socket '/tmp/kingkong.socket' # Munin can check this for stats
-
+    
+    require 'kingkong'
+    require 'em-http-request'
+    
+    KingKing::Runner.start {
+      socket '/tmp/king_kong.socket' # Check this socket with Munin and make a graph!
+      
       ping(:google).every(3).seconds do |ping|
-        google = http('http://www.google.com/').get
-
-        ping.on_timeout {
-          # ZOMG! Email the admin! Google is down!
-        }
-
-        ping.start_time           # Start the clock!
-        google.callback {         # This triggers the request
-          ping.end_time           # And this stops the clock!
-        }
+        google = EventMachine::HttpRequest.new('http://google.com/')
+        google.callback { ping.stop }
+        google.errback { ping.fail }
+        ping.start and google.get
       end
-
+      
       ping(:twitter).every(10).seconds do |ping|
         # Wire up your own thing in here that tweets
         # .. and when you pick that up, end the pong!

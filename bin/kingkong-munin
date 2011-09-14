@@ -4,7 +4,7 @@ require 'socket'
 require 'yaml'
 
 puts case ARGV.first
-when /config/
+ when /config/
   %(graph_title Result latency
 graph_category App
 graph_vlabel load
@@ -13,3 +13,6 @@ else
   stats = YAML.load UNIXSocket.new("/tmp/kingkong.socket").gets("\r\n")
   %(load.value #{stats[:avg]})
 end
+
+# TODO - Message throughput
+# TODO - Message latency (min/max/avg)

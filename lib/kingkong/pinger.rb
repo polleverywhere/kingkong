@@ -4,17 +4,19 @@ module KingKong
   class Pinger
     include Logging
 
-    attr_accessor :aggregator, :duration
+    attr_reader :wait
 
-    def initialize(duration=5)
-      @duration = duration
+    def initialize(wait=5,&block)
+      @wait = wait
+      @block = block if block_given?
+      self
     end
 
     # Starts the pinger
-    def start(&block)
+    def start
       logger.debug "Starting pinger #{self}"
-      @timer = EventMachine::PeriodicTimer.new(duration){ ping(&block) }
-      ping(&block)
+      @timer = EventMachine::PeriodicTimer.new(wait){ ping }
+      ping # Start a ping right away, the timer above will fire later.
     end
 
     # Stop the pinger from executing
@@ -27,22 +29,25 @@ module KingKong
     def aggregator
       @aggregatore ||= Aggregator.new
     end
-    
+
   private
     # Add all of the instrumentation callbacks into the ping so we can aggregate it later
-    def ping(&block)
-      ping = Ping::Deferrable.new(30, sequencer)
+    def ping
+      ping = Ping::Deferrable.new(Ping.default_ttl, sequencer)
+
       # Register the aggregator to process the ping
       ping.callback { 
         logger.debug "Ping #{ping} successful"
         aggregator.process ping
       }
+
       ping.errback  {
         logger.debug "Ping #{ping} error (probably a timeout)"
         aggregator.process ping
       }
+
       # Now pass the ping into the block so we can start/stop it
-      yield ping if block_given?
+      @block.call(ping, self)
     end
 
     # Setup a squencer that's unique specifically to this pinger
