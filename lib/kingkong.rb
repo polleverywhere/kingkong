@@ -14,7 +14,13 @@ module KingKong
     @logger ||= Logger.new($stdout)
   end
 
+  # Want to override the default logger? Its cool, change it up here.
   def self.logger=(logger)
     @logger = logger
+  end
+
+  # Shortcut for starting a runner
+  def self.start(*args)
+    Runner.new(*args)
   end
 end

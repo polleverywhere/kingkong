@@ -35,7 +35,7 @@ When its done, it will look something like this:
     require 'kingkong'
     require 'em-http-request'
 
-    KingKong::Runner.start {
+    KingKong.start {
       socket '/tmp/king_kong.socket' # Check this socket with Munin and make a graph!
 
       ping(:google).every(3).seconds do |ping|
