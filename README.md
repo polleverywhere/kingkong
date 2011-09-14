@@ -58,4 +58,12 @@ When its done, it will look something like this:
 
 and its going to aggregate stats so you can plug it into munin and get all sorts of graphing goodness.
 
-Stay tuned, I'm still working out the ping DSL and reporting infrastructure!
+## Getting Started
+
+Install the KingKong gem.
+
+    gem install kingkong
+
+Then look at the example above!
+
+If you don't understand EventMachine, you might have a little trouble getting this stuff working. Eventually I'd like to hook up Em::Syncrony and a nicer DSL for common tasks, like HTTP checks, to keep things simple.
