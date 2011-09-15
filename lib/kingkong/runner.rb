@@ -1,3 +1,5 @@
+require 'nosey'
+
 module KingKong
   # Configure multiple pingers to run
   class Runner
@@ -9,7 +11,7 @@ module KingKong
     end
 
     # Setup the socket that this thing will write stats out to
-    def socket(host=KingKong::Reporting::Server::Host, port=KingKong::Reporting::Server::Port)
+    def socket(host='/tmp/king_kong.socket', port=nil)
       @socket_host , @socket_port = host, port
     end
 
@@ -47,7 +49,14 @@ module KingKong
   private
     # Fire up the reporting server if a socket (and port, optionally) are given
     def start_socket
-      Reporting::Server.start(pingers.map(&:aggregator), @socket_host, @socket_port) if @socket_host
+      EM::Nosey::SocketServer.start(nosey_report, @socket_host, @socket_port) if @socket_host
+    end
+
+    # Get us the nosey report that our nosey socket needs to get the job done son!
+    def nosey_report
+      Nosey::Report.new do |r|
+        r.probe_sets << pingers.map(&:nosey)
+      end
     end
 
     # Fire up all the pingers

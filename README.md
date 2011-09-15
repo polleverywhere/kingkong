@@ -30,7 +30,6 @@
 
 KingKong makes it easy to build full-stack ping-pong health checks so you can keep an eye on crucial input/outputs and make sure things stay nice and fast. You might need this to check and graph out the response time on your website, Twitter application, SMS gateway, or whatever else you'd connect to a network.
 
-
 ## Getting Started
 
 Install the KingKong gem.

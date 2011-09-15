@@ -1,8 +1,10 @@
 require 'eventmachine'
+require 'nosey'
 
 module KingKong
   class Pinger
     include Logging
+    include Nosey::Instrumentation
 
     attr_reader :wait
 
@@ -25,11 +27,6 @@ module KingKong
       @timer.cancel if @timer
     end
 
-    # Gather up all the numbers we need for reporting later on
-    def aggregator
-      @aggregatore ||= Aggregator.new
-    end
-
   private
     # Add all of the instrumentation callbacks into the ping so we can aggregate it later
     def ping
@@ -38,12 +35,12 @@ module KingKong
       # Register the aggregator to process the ping
       ping.callback { 
         logger.debug "Ping #{ping} successful"
-        aggregator.process ping
+        process ping
       }
 
       ping.errback  {
         logger.debug "Ping #{ping} error (probably a timeout)"
-        aggregator.process ping
+        process ping
       }
 
       # Now pass the ping into the block so we can start/stop it
@@ -53,6 +50,17 @@ module KingKong
     # Setup a squencer that's unique specifically to this pinger
     def sequencer
       @sequencer ||= Ping::Sequencer.new
+    end
+
+    # Process a stinkin ping and report aggregate stats to Nosey
+    def process(ping)
+      nosey.increment 'pings'
+      case ping.status
+      when :timed_out
+        nosey.increment 'pings-timed-out'
+      when :complete
+        nosey.sample "pings-completed", ping.latency
+      end
     end
   end
 end
