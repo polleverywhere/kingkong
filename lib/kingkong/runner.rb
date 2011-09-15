@@ -6,8 +6,11 @@ module KingKong
     include Logging
 
     # Array of pingers that we're running
-    def ping(name)
-      pinger_configurations[name]
+    def ping(name, &block)
+      DSL::Pinger.new(&block).completed do |pinger|
+        pinger.nosey.name = name.to_s
+        pingers << pinger
+      end
     end
 
     # Setup the socket that this thing will write stats out to
@@ -55,7 +58,7 @@ module KingKong
     # Get us the nosey report that our nosey socket needs to get the job done son!
     def nosey_report
       Nosey::Report.new do |r|
-        r.probe_sets << pingers.map(&:nosey)
+        r.probe_sets = pingers.map(&:nosey)
       end
     end
 
@@ -64,15 +67,9 @@ module KingKong
       pingers.each(&:start)
     end
 
-    # Hang onto pinger configuration so that we can configure pinger instances and fire them
-    # off. We'll also be using this for writing reports.
-    def pinger_configurations
-      @pinger_configurations ||= Hash.new{|hash,val| hash[val] = DSL::Pinger.new }
-    end
-
     # Create instances of pingers from the configurations that we setup in the runner
     def pingers
-      @pingers ||= pinger_configurations.values.map(&:pinger)
+      @pingers ||= []
     end
 
     def self.ensure_running_reactor(&block)
@@ -101,18 +98,21 @@ module KingKong
         # Configure duration as seconds
         def seconds(&block)
           unitize Unit::Second, &block
+          complete
         end
         alias :second :seconds
 
         # Configure the duration as minutes
         def minutes(&block)
           unitize Unit::Minute, &block
+          complete
         end
         alias :minute :minutes
 
         # Configure the ping duration as hours
         def hours(&block)
           unitize Unit::Hour, &block
+          complete
         end
         alias :hour :hours
 
@@ -126,11 +126,23 @@ module KingKong
           KingKong::Pinger.new(duration, &@block)
         end
 
+        # Callback when we've completed the configuration of this thing.
+        def completed(&block)
+          @completed_blk = block
+          self
+        end
+
       private
         # Figures out the number of seconds that we multply by the units
         def unitize(units, &block)
           @units = units
           @block = block
+          self
+        end
+
+        # Yay! Its complete!
+        def complete
+          @completed_blk.call(pinger) if @completed_blk
           self
         end
       end

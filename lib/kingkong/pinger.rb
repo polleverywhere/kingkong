@@ -54,12 +54,15 @@ module KingKong
 
     # Process a stinkin ping and report aggregate stats to Nosey
     def process(ping)
-      nosey.increment 'pings'
+      nosey.increment 'ping_count'
       case ping.status
       when :timed_out
-        nosey.increment 'pings-timed-out'
-      when :complete
-        nosey.sample "pings-completed", ping.latency
+        nosey.increment 'ping_timed_out_count'
+      when :completed
+        nosey.increment 'ping_completed_count'
+        nosey.avg "ping_avg_latency", ping.latency
+        nosey.min "ping_min_latency", ping.latency
+        nosey.max "ping_max_latency", ping.latency
       end
     end
   end

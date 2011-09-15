@@ -28,5 +28,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'ruby-debug19'
 
   s.add_runtime_dependency "eventmachine"
-  s.add_runtime_dependency "nosey"
+  s.add_runtime_dependency "nosey", '0.0.4'
 end

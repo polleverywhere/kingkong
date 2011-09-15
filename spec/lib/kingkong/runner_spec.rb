@@ -8,13 +8,17 @@ describe KingKong::Runner do
     @@google_pinged = @@twitter_pinged = false
 
     @runner = KingKong::Runner.configure do |runner|
-      runner.socket '/tmp/king_kong.socket'
+      runner.socket '/tmp/king_kong_test.socket'
 
-      runner.ping(:google).every(0.1).seconds do
+      runner.ping(:google).every(0.1).seconds do |ping|
+        ping.start
+        ping.stop
         @@google_pinged = true
       end
 
-      runner.ping(:twitter).every(2).seconds do
+      runner.ping(:twitter).every(2).seconds do |ping|
+        ping.start
+        ping.stop
         @@twitter_pinged = true
       end
     end
@@ -27,7 +31,10 @@ describe KingKong::Runner do
 
   it "should write data to socket" do
     @runner.start
-    # puts UNIXSocket.new('/tmp/king_kong.socket').gets("\n\n")
+    KingKong::Test::ReadSocket.start('/tmp/king_kong_test.socket').callback{|data|
+      @data = data
+    }
+    ly{ @data }.test{|data| data =~ /max/ }
   end
 end
 
