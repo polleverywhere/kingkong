@@ -6,6 +6,7 @@ module KingKong
   autoload :Runner,     'kingkong/runner'
   autoload :Logging,    'kingkong/logging'
   autoload :Aggregator, 'kingkong/aggregator'
+  autoload :Processor,  'kingkong/processor'
 
   # Default logger for KingKong.
   def self.logger

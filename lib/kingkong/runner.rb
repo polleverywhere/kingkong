@@ -8,19 +8,25 @@ module KingKong
     # Array of pingers that we're running
     def ping(name, &block)
       DSL::Pinger.new(&block).completed do |pinger|
-        pinger.nosey.name = name.to_s
+        pinger.on_ping do |ping|
+          process ping, name
+        end
         pingers << pinger
       end
     end
 
-    # Setup the socket that this thing will write stats out to
-    def socket(host='/tmp/king_kong.socket', port=nil)
-      @socket_host , @socket_port = host, port
+    # We use this method to pass our pings through a processor
+    def process(ping, name)
+      @processor.call(ping,name) if @processor
+    end
+
+    # Configure the processor that we use to report pings
+    def on_pong(&block)
+      @processor = block
     end
 
     # Start all of the pingers given the configurations
     def start
-      start_socket
       start_pingers
     end
 
@@ -50,18 +56,6 @@ module KingKong
     end
 
   private
-    # Fire up the reporting server if a socket (and port, optionally) are given
-    def start_socket
-      EM::Nosey::SocketServer.start(nosey_report, @socket_host, @socket_port) if @socket_host
-    end
-
-    # Get us the nosey report that our nosey socket needs to get the job done son!
-    def nosey_report
-      Nosey::Report.new do |r|
-        r.probe_sets = pingers.map(&:nosey)
-      end
-    end
-
     # Fire up all the pingers
     def start_pingers
       pingers.each(&:start)

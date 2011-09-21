@@ -28,4 +28,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency "eventmachine"
   s.add_runtime_dependency "nosey"
+  s.add_runtime_dependency "yajl-ruby"
+  s.add_runtime_dependency "em-http-request"
 end

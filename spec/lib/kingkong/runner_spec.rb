@@ -8,8 +8,6 @@ describe KingKong::Runner do
     @@google_pinged = @@twitter_pinged = false
 
     @runner = KingKong::Runner.configure do |runner|
-      runner.socket '/tmp/king_kong_test.socket'
-
       runner.ping(:google).every(0.1).seconds do |ping|
         ping.start
         ping.stop
@@ -30,8 +28,16 @@ describe KingKong::Runner do
   end
 
   it "should write data to socket" do
+    nosey = KingKong::Processor::Nosey.new('/tmp/king_kong_test.socket')
+
+    @runner.on_pong do |ping, name|
+      nosey.process ping, name
+    end
+
     @runner.start
-    KingKong::Test::ReadSocket.start('/tmp/king_kong_test.socket').callback{|data|
+    c = KingKong::Test::ReadSocket.start('/tmp/king_kong_test.socket')
+    c.send_data("READ\nQUIT\n")
+    c.callback{|data|
       @data = data
     }
     ly{ @data }.test{|data| data =~ /max/ }

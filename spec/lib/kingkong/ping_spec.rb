@@ -6,6 +6,10 @@ describe KingKong::Ping do
     KingKong::Ping.new.ttl.should eql(KingKong::Ping.default_ttl)
   end
 
+  it "should return hash" do
+    KingKong::Ping.new.to_hash.keys.should include(*%w[status latency start_time end_time ttl])
+  end
+
   context "active" do
     before(:each) do
       @ping = KingKong::Ping.new      # Open up a pinger

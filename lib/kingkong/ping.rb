@@ -70,7 +70,7 @@ module KingKong
     end
 
     def to_s
-      "Ping(#{id}, :#{status})"
+      "Ping(#{id}, :#{status}#{", #{latency}s" if completed?})"
     end
 
     # Generates ids for pings
@@ -81,6 +81,17 @@ module KingKong
     # Default TTL. Override this method if you want a different default.
     def self.default_ttl
       30 # 30 seconds that is!
+    end
+
+    # Bust out a hash so that we can encode it into JSON and make some magic happen.
+    def to_hash
+      {
+        'status' => status,
+        'latency' => latency,
+        'start_time' => start_time,
+        'end_time' => end_time,
+        'ttl' => ttl
+      }
     end
 
   private
