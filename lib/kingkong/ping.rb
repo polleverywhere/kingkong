@@ -88,8 +88,8 @@ module KingKong
       {
         'status' => status,
         'latency' => latency,
-        'start_time' => start_time,
-        'end_time' => end_time,
+        'start_time' => start_time.iso8601,
+        'end_time' => end_time.iso8601,
         'ttl' => ttl
       }
     end
