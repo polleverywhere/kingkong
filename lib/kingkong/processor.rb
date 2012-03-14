@@ -16,8 +16,6 @@ module KingKong
     end
 
     class Nosey < Base
-      # include ::Nosey::Instrumentation
-
       def initialize(host='/tmp/kingkong.socket',port=nil)
         EventMachine::Nosey::SocketServer.start(nosey.report, host, port)
       end
@@ -49,9 +47,7 @@ module KingKong
       def process(ping, name)
         http = EM::HttpRequest.new(url).post({
           :body => Yajl::Encoder.encode([cube_hash(ping, name)]),
-          :head => {
-            'content-type' => 'application/json'
-          }
+          :head => {'content-type' => 'application/json'}
         })
         http.callback{
           case http.response_header.status
