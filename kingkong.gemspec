@@ -24,7 +24,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rb-fsevent'
   s.add_development_dependency 'em-ventually'
   s.add_development_dependency 'timecop'
-  s.add_development_dependency 'ruby-debug19'
 
   s.add_runtime_dependency "eventmachine"
   s.add_runtime_dependency "nosey"
