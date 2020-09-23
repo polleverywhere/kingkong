@@ -119,7 +119,7 @@ module KingKong
 
   private
     # Spits out a key and run for a result
-    def key(count=count)
+    def key(count=count())
       "#{count}:#{run}"
     end
   end
